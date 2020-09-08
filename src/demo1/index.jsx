@@ -27,7 +27,7 @@ const generateTexture = (text) => {
       scaledText(i);
     });
 
-  document.body.appendChild(bitmap);
+  // document.body.appendChild(bitmap);
   return bitmap;
 };
 
@@ -36,8 +36,9 @@ const Demo1 = (props) => {
   const [textureWidth, setTextureWidth] = React.useState(16);
 
   React.useEffect(() => {
-    let width = mount.current.clientWidth;
-    let height = mount.current.clientHeight;
+    const canvasEl = mount.current;
+    let width = canvasEl.clientWidth;
+    let height = canvasEl.clientHeight;
 
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
@@ -83,12 +84,10 @@ const Demo1 = (props) => {
     // INIT
     animate();
 
-    mount.current.appendChild(renderer.domElement);
-
     // RESIZE
     const handleResize = () => {
-      width = mount.current.clientWidth;
-      height = mount.current.clientHeight;
+      width = canvasEl.clientWidth;
+      height = canvasEl.clientHeight;
       renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
@@ -96,6 +95,17 @@ const Demo1 = (props) => {
     };
 
     window.addEventListener("resize", handleResize);
+
+    canvasEl.appendChild(renderer.domElement);
+
+    return () => {
+      console.log("**CURSOR UNMOUNTED**");
+      console.log(mount);
+      if (canvasEl) {
+        canvasEl.removeChild(renderer.domElement);
+      }
+      // console.clear();
+    };
   });
 
   return (
