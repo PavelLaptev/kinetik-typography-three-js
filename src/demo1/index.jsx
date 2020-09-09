@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./demo.module.scss";
 import * as THREE from "three";
+import { Canvas, useFrame } from "react-three-fiber";
 import RangeControl from "../components/RangeControl";
 
 const generateTexture = (text) => {
@@ -27,7 +28,7 @@ const generateTexture = (text) => {
       scaledText(i);
     });
 
-  // document.body.appendChild(bitmap);
+  document.body.appendChild(bitmap);
   return bitmap;
 };
 
@@ -100,23 +101,26 @@ const Demo1 = (props) => {
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
-      console.log(mount);
-      if (canvasEl) {
-        canvasEl.removeChild(renderer.domElement);
-      }
-      // console.clear();
     };
-  });
+  }, []);
+
+  const rangeOnChange = (e) => {
+    setTextureWidth(e.target.value);
+  };
 
   return (
     <div className={styles.wrap} ref={mount}>
       <section className={styles.controls}>
-        <RangeControl
-          min="8"
-          max="40"
-          onChange={(e) => setTextureWidth(e.target.value)}
-        />
+        <RangeControl min="1" max="4" onChange={rangeOnChange} />
       </section>
+      <Canvas camera={{ fov: 50, position: [0, 0, 17] }}>
+        {/* <ambientLight /> */}
+        <pointLight position={[10, 10, 10]} />
+        <mesh {...props}>
+          <torusKnotBufferGeometry attach="geometry" args={[14, 4, 120, 10]} />
+          <meshBasicMaterial map={generateTexture("sdssdsddsd")} />
+        </mesh>
+      </Canvas>
     </div>
   );
 };
