@@ -1,14 +1,13 @@
 import React from "react";
 import styles from "./demo.module.scss";
 import * as THREE from "three";
-import { Canvas, useFrame } from "react-three-fiber";
 import RangeControl from "../components/RangeControl";
 
 const generateTexture = (text) => {
   const bitmapShift = 80;
   const copyAmount = 4;
-  const canvasSize = 400;
-  const fontSize = 400 / copyAmount;
+  const canvasSize = 640;
+  const fontSize = canvasSize / copyAmount;
 
   const bitmap = document.createElement("canvas");
   bitmap.width = canvasSize;
@@ -32,17 +31,25 @@ const generateTexture = (text) => {
   return bitmap;
 };
 
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
 const Demo1 = (props) => {
   const mount = React.useRef(null);
-  const [textureWidth, setTextureWidth] = React.useState(16);
+  const textureWidthSlider = React.useRef(null);
 
   React.useEffect(() => {
-    const canvasEl = mount.current;
-    let width = canvasEl.clientWidth;
-    let height = canvasEl.clientHeight;
+    const canvas = document.querySelector("#c");
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
     const scene = new THREE.Scene();
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: false,
+      alpha: true,
+    });
 
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     camera.position.z = 20;
@@ -52,7 +59,7 @@ const Demo1 = (props) => {
     torusTexture.needsUpdate = true;
     torusTexture.wrapS = THREE.RepeatWrapping;
     torusTexture.wrapT = THREE.RepeatWrapping;
-    torusTexture.repeat.set(textureWidth, 2);
+    torusTexture.repeat.set(16, 2);
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
     // OBJECTS
@@ -64,10 +71,9 @@ const Demo1 = (props) => {
     // LIGHT
     const light = new THREE.DirectionalLight(0xffffff);
     light.position.set(0.5, 1, 1).normalize();
-    scene.add(light);
 
     // SCENE
-    scene.add(torus);
+    scene.add(torus, light);
     renderer.setSize(width, height);
 
     const renderScene = () => {
@@ -87,40 +93,34 @@ const Demo1 = (props) => {
 
     // RESIZE
     const handleResize = () => {
-      width = canvasEl.clientWidth;
-      height = canvasEl.clientHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
       renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderScene();
     };
 
-    window.addEventListener("resize", handleResize);
+    const handleTextureWidth = (e) => {
+      torusTexture.repeat.set(e.target.value, 2);
+      renderScene();
+    };
 
-    canvasEl.appendChild(renderer.domElement);
+    window.addEventListener("resize", handleResize);
+    textureWidthSlider.current.addEventListener("change", handleTextureWidth);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
+      // console.clear();
     };
   }, []);
-
-  const rangeOnChange = (e) => {
-    setTextureWidth(e.target.value);
-  };
 
   return (
     <div className={styles.wrap} ref={mount}>
       <section className={styles.controls}>
-        <RangeControl min="1" max="4" onChange={rangeOnChange} />
+        <RangeControl ref={textureWidthSlider} min="8" max="40" />
       </section>
-      <Canvas camera={{ fov: 50, position: [0, 0, 17] }}>
-        {/* <ambientLight /> */}
-        <pointLight position={[10, 10, 10]} />
-        <mesh {...props}>
-          <torusKnotBufferGeometry attach="geometry" args={[14, 4, 120, 10]} />
-          <meshBasicMaterial map={generateTexture("sdssdsddsd")} />
-        </mesh>
-      </Canvas>
+      <canvas id="c" />
     </div>
   );
 };
