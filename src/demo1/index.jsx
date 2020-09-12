@@ -45,6 +45,8 @@ const generateTexture = (text) => {
 const Demo1 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
+  const textureHeightSlider = React.useRef(null);
+  const textureRotationSlider = React.useRef(null);
 
   React.useEffect(() => {
     const canvas = mount.current;
@@ -64,10 +66,13 @@ const Demo1 = (props) => {
 
     // TEXTURE
     const torusTexture = new THREE.Texture(generateTexture("YOUCAN"));
+    let textureWidth = 20;
+    let textureHeight = 5;
+
     torusTexture.needsUpdate = true;
     torusTexture.wrapS = THREE.RepeatWrapping;
     torusTexture.wrapT = THREE.RepeatWrapping;
-    torusTexture.repeat.set(20, 5);
+    torusTexture.repeat.set(textureWidth, textureHeight);
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
     // OBJECTS
@@ -92,7 +97,8 @@ const Demo1 = (props) => {
     // FUNCTIONS
     const animate = () => {
       requestAnimationFrame(animate);
-      torusTexture.offset.y -= 0.008;
+      torusTexture.offset.y -= 0.009;
+      // torusTexture.rotation += 0.001;
       // torusTexture.offset.x -= 0.008;
       // torus.rotation.y += 0.006;
       torus.rotation.z -= 0.01;
@@ -112,13 +118,36 @@ const Demo1 = (props) => {
       renderScene();
     };
 
-    const handleTextureWidth = (e) => {
-      torusTexture.repeat.set(e.target.value, 2);
-      renderScene();
+    // TEXTURE CHANGES
+    const changeTexture = {
+      width: (e) => {
+        textureWidth = e.target.value;
+        torusTexture.repeat.set(textureWidth, textureHeight);
+        renderScene();
+      },
+      height: (e) => {
+        textureHeight = e.target.value;
+        torusTexture.repeat.set(textureWidth, textureHeight);
+        renderScene();
+      },
+      rotation: (e) => {
+        textureHeight = e.target.value;
+        torusTexture.repeat.set(textureWidth, textureHeight);
+        renderScene();
+      },
     };
 
+    // WATCHERS
     window.addEventListener("resize", handleResize);
-    textureWidthSlider.current.addEventListener("change", handleTextureWidth);
+    textureWidthSlider.current.addEventListener("change", changeTexture.width);
+    textureHeightSlider.current.addEventListener(
+      "change",
+      changeTexture.height
+    );
+    textureRotationSlider.current.addEventListener(
+      "change",
+      changeTexture.height
+    );
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -128,7 +157,19 @@ const Demo1 = (props) => {
   return (
     <div className={styles.wrap}>
       <section className={styles.controls}>
-        <RangeControl ref={textureWidthSlider} min="4" max="60" />
+        <RangeControl ref={textureWidthSlider} label="Width" min="4" max="60" />
+        <RangeControl
+          ref={textureHeightSlider}
+          label="Height"
+          min="4"
+          max="60"
+        />
+        <RangeControl
+          ref={textureRotationSlider}
+          label="Rotation"
+          min="4"
+          max="60"
+        />
       </section>
       <canvas ref={mount} id="c" />
     </div>
