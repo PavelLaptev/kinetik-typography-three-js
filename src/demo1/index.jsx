@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./demo.module.scss";
 import * as THREE from "three";
-import RangeControl from "../components/RangeControl";
+import Input from "../components/Input";
 
 const generateTexture = (text) => {
   const bitmapShift = 80;
@@ -34,7 +34,7 @@ const generateTexture = (text) => {
       fillAndShiftText(i);
     });
 
-  document.body.appendChild(bitmap);
+  // document.body.appendChild(bitmap);
   return bitmap;
 };
 
@@ -47,6 +47,9 @@ const Demo1 = (props) => {
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
   const textureRotationSlider = React.useRef(null);
+  const textureTextInput = React.useRef(null);
+  const poligonsSlider = React.useRef(null);
+  const speedSlider = React.useRef(null);
 
   React.useEffect(() => {
     const canvas = mount.current;
@@ -65,18 +68,31 @@ const Demo1 = (props) => {
     camera.position.z = 20;
 
     // TEXTURE
-    const torusTexture = new THREE.Texture(generateTexture("YOUCAN"));
-    let textureWidth = 20;
-    let textureHeight = 5;
+    const torusTexture = new THREE.Texture(
+      generateTexture(textureTextInput.current.value)
+    );
+    let textureProps = {
+      width: 20,
+      height: 5,
+      speed: 0.009,
+    };
 
     torusTexture.needsUpdate = true;
     torusTexture.wrapS = THREE.RepeatWrapping;
     torusTexture.wrapT = THREE.RepeatWrapping;
-    torusTexture.repeat.set(textureWidth, textureHeight);
+    torusTexture.repeat.set(
+      textureWidthSlider.current.value,
+      textureHeightSlider.current.value
+    );
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
     // OBJECTS
-    const torusGeometry = new THREE.TorusKnotBufferGeometry(20, 8, 90, 24);
+    const torusGeometry = new THREE.TorusKnotBufferGeometry(
+      20,
+      8,
+      poligonsSlider.current.value,
+      24
+    );
     const torus = new THREE.Mesh(torusGeometry, torusMaterial);
     torus.rotation.x = -50;
     torus.rotation.z = 100;
@@ -97,7 +113,7 @@ const Demo1 = (props) => {
     // FUNCTIONS
     const animate = () => {
       requestAnimationFrame(animate);
-      torusTexture.offset.y -= 0.009;
+      torusTexture.offset.y -= textureProps.speed;
       // torusTexture.rotation += 0.001;
       // torusTexture.offset.x -= 0.008;
       // torus.rotation.y += 0.006;
@@ -121,20 +137,36 @@ const Demo1 = (props) => {
     // TEXTURE CHANGES
     const changeTexture = {
       width: (e) => {
-        textureWidth = e.target.value;
-        torusTexture.repeat.set(textureWidth, textureHeight);
+        textureProps.width = e.target.value;
+        torusTexture.repeat.set(textureProps.width, textureProps.height);
         renderScene();
       },
       height: (e) => {
-        textureHeight = e.target.value;
-        torusTexture.repeat.set(textureWidth, textureHeight);
+        textureProps.height = e.target.value;
+        torusTexture.repeat.set(textureProps.width, textureProps.height);
         renderScene();
       },
       rotation: (e) => {
-        textureHeight = e.target.value;
-        torusTexture.repeat.set(textureWidth, textureHeight);
+        torusTexture.rotation = e.target.value / 10;
         renderScene();
       },
+      text: (e) => {
+        torus.material.map.image = generateTexture(e.target.value);
+        torus.material.map.needsUpdate = true;
+        renderScene();
+      },
+      handleSpeed: (e) => {
+        textureProps.speed = e.target.value / 1000;
+      },
+    };
+
+    const handlePoligons = (e) => {
+      torus.geometry = new THREE.TorusKnotBufferGeometry(
+        20,
+        8,
+        e.target.value,
+        24
+      );
     };
 
     // WATCHERS
@@ -146,8 +178,11 @@ const Demo1 = (props) => {
     );
     textureRotationSlider.current.addEventListener(
       "change",
-      changeTexture.height
+      changeTexture.rotation
     );
+    textureTextInput.current.addEventListener("change", changeTexture.text);
+    poligonsSlider.current.addEventListener("change", handlePoligons);
+    speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -157,18 +192,46 @@ const Demo1 = (props) => {
   return (
     <div className={styles.wrap}>
       <section className={styles.controls}>
-        <RangeControl ref={textureWidthSlider} label="Width" min="4" max="60" />
-        <RangeControl
+        <Input
+          type="range"
+          ref={textureWidthSlider}
+          label="Width"
+          min="4"
+          max="60"
+          val="20"
+        />
+        <Input
+          type="range"
           ref={textureHeightSlider}
           label="Height"
-          min="4"
+          min="1"
           max="60"
+          val="5"
         />
-        <RangeControl
+        <Input
+          type="range"
           ref={textureRotationSlider}
           label="Rotation"
-          min="4"
+          min="0"
           max="60"
+          val="0"
+        />
+        <Input type="text" ref={textureTextInput} label="Text" val="YOUCAN" />
+        <Input
+          type="range"
+          ref={poligonsSlider}
+          label="Poligons"
+          min="3"
+          max="100"
+          val="80"
+        />
+        <Input
+          type="range"
+          ref={speedSlider}
+          label="Speed"
+          min="1"
+          max="100"
+          val="10"
         />
       </section>
       <canvas ref={mount} id="c" />
