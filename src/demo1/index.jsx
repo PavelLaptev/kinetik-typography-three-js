@@ -219,19 +219,19 @@ const Demo1 = (props) => {
         <Input type="text" ref={textureTextInput} label="Text" val="YOUCAN" />
         <Input
           type="range"
-          ref={poligonsSlider}
-          label="Poligons"
-          min="3"
-          max="100"
-          val="80"
-        />
-        <Input
-          type="range"
           ref={speedSlider}
           label="Speed"
           min="1"
           max="100"
           val="10"
+        />
+        <Input
+          type="range"
+          ref={poligonsSlider}
+          label="Poligons"
+          min="3"
+          max="100"
+          val="80"
         />
       </section>
       <canvas ref={mount} id="c" />
