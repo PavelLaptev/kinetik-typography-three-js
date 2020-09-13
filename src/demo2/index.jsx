@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./demo.module.scss";
 import * as THREE from "three";
+
 import Input from "../components/Input";
 
 const generateTexture = (text) => {
@@ -42,7 +43,7 @@ const generateTexture = (text) => {
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-const Demo1 = (props) => {
+const Demo2 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
@@ -87,19 +88,17 @@ const Demo1 = (props) => {
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
     // OBJECTS
-    const torusGeometry = new THREE.TorusKnotBufferGeometry(
-      20,
-      8,
-      poligonsSlider.current.value,
-      24
+    const torusGeometry = new THREE.TorusBufferGeometry(
+      24,
+      7,
+      40,
+      poligonsSlider.current.value
     );
     const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-    torus.rotation.x = -50;
-    torus.rotation.z = 100;
-    torus.position.y = 2;
 
     // LIGHT
     const light = new THREE.AmbientLight(0xffffff);
+    light.position.set(0.5, 1, 1).normalize();
 
     // SCENE
     scene.add(torus, light);
@@ -113,9 +112,6 @@ const Demo1 = (props) => {
     const animate = () => {
       requestAnimationFrame(animate);
       torusTexture.offset.y -= textureProps.speed;
-      // torusTexture.rotation += 0.001;
-      // torusTexture.offset.x -= 0.008;
-      // torus.rotation.y += 0.006;
       torus.rotation.z -= 0.01;
       renderScene();
     };
@@ -160,12 +156,7 @@ const Demo1 = (props) => {
     };
 
     const handlePoligons = (e) => {
-      torus.geometry = new THREE.TorusKnotBufferGeometry(
-        20,
-        8,
-        e.target.value,
-        24
-      );
+      torus.geometry = new THREE.TorusBufferGeometry(24, 7, 40, e.target.value);
     };
 
     // WATCHERS
@@ -229,8 +220,8 @@ const Demo1 = (props) => {
           ref={poligonsSlider}
           label="Poligons"
           min="3"
-          max="100"
-          val="80"
+          max="40"
+          val="30"
         />
       </section>
       <canvas ref={mount} id="c" />
@@ -238,4 +229,4 @@ const Demo1 = (props) => {
   );
 };
 
-export default Demo1;
+export default Demo2;

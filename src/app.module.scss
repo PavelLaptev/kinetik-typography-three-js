@@ -1,0 +1,15 @@
+.app {
+  text-align: center;
+}
+
+.navigation {
+  padding: 10px;
+  z-index: 999;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.link {
+  padding: 20px 10px;
+}
