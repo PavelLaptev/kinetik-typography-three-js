@@ -89,20 +89,19 @@ const Demo2 = (props) => {
 
     // OBJ ARRAYS
     let torArray = [];
+    let torusProps = [28, 8.8, 40];
 
     // OBJECTS
     Array(5)
       .fill(0)
       .forEach((item, i) => {
         const torusGeometry = new THREE.TorusBufferGeometry(
-          32,
-          9,
-          40,
+          ...torusProps,
           poligonsSlider.current.value
         );
         const torus = new THREE.Mesh(torusGeometry, torusMaterial);
         torArray.push(torus);
-        torus.position.z = -i * i * 10;
+        torus.position.z = -i * i * 12;
         scene.add(torus);
       });
 
@@ -111,8 +110,8 @@ const Demo2 = (props) => {
     light.position.set(0, 0, -20);
     scene.add(light);
 
-    const lightTwo = new THREE.PointLight("rgb(0%, 0%, 100%)", 1, 100);
-    lightTwo.position.set(0, 0, -150);
+    const lightTwo = new THREE.PointLight("rgb(0%, 0%, 100%)", 0.5, 100);
+    lightTwo.position.set(0, 0, -180);
     scene.add(lightTwo);
 
     const lightThree = new THREE.PointLight("rgb(10%, 0%, 100%)", 1, 100);
@@ -155,49 +154,51 @@ const Demo2 = (props) => {
     };
 
     // TEXTURE CHANGES
-    // const changeTexture = {
-    //   width: (e) => {
-    //     textureProps.width = e.target.value;
-    //     torusTexture.repeat.set(textureProps.width, textureProps.height);
-    //     renderScene();
-    //   },
-    //   height: (e) => {
-    //     textureProps.height = e.target.value;
-    //     torusTexture.repeat.set(textureProps.width, textureProps.height);
-    //     renderScene();
-    //   },
-    //   rotation: (e) => {
-    //     torusTexture.rotation = e.target.value / 10;
-    //     renderScene();
-    //   },
-    //   text: (e) => {
-    //     torus.material.map.image = generateTexture(e.target.value);
-    //     torus.material.map.needsUpdate = true;
-    //     renderScene();
-    //   },
-    //   handleSpeed: (e) => {
-    //     textureProps.speed = e.target.value / 1000;
-    //   },
-    // };
+    const changeTexture = {
+      width: (e) => {
+        textureProps.width = e.target.value;
+        torusTexture.repeat.set(textureProps.width, textureProps.height);
+      },
+      height: (e) => {
+        textureProps.height = e.target.value;
+        torusTexture.repeat.set(textureProps.width, textureProps.height);
+      },
+      rotation: (e) => {
+        torusTexture.rotation = e.target.value / 10;
+        renderScene();
+      },
+      text: (e) => {
+        torusMaterial.map.image = generateTexture(e.target.value);
+        torusMaterial.map.needsUpdate = true;
+      },
+      handleSpeed: (e) => {
+        textureProps.speed = e.target.value / 1000;
+      },
+    };
 
-    // const handlePoligons = (e) => {
-    //   torus.geometry = new THREE.TorusBufferGeometry(24, 7, 30, e.target.value);
-    // };
+    const handlePoligons = (e) => {
+      torArray.forEach((item, i) => {
+        item.geometry = new THREE.TorusBufferGeometry(
+          ...torusProps,
+          e.target.value
+        );
+      });
+    };
 
     // WATCHERS
     window.addEventListener("resize", handleResize);
-    // textureWidthSlider.current.addEventListener("change", changeTexture.width);
-    // textureHeightSlider.current.addEventListener(
-    //   "change",
-    //   changeTexture.height
-    // );
-    // textureRotationSlider.current.addEventListener(
-    //   "change",
-    //   changeTexture.rotation
-    // );
-    // textureTextInput.current.addEventListener("change", changeTexture.text);
-    // poligonsSlider.current.addEventListener("change", handlePoligons);
-    // speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
+    textureWidthSlider.current.addEventListener("change", changeTexture.width);
+    textureHeightSlider.current.addEventListener(
+      "change",
+      changeTexture.height
+    );
+    textureRotationSlider.current.addEventListener(
+      "change",
+      changeTexture.rotation
+    );
+    textureTextInput.current.addEventListener("change", changeTexture.text);
+    speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
+    poligonsSlider.current.addEventListener("change", handlePoligons);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");

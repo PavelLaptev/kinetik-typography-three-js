@@ -138,21 +138,17 @@ const Demo1 = (props) => {
       width: (e) => {
         textureProps.width = e.target.value;
         torusTexture.repeat.set(textureProps.width, textureProps.height);
-        renderScene();
       },
       height: (e) => {
         textureProps.height = e.target.value;
         torusTexture.repeat.set(textureProps.width, textureProps.height);
-        renderScene();
       },
       rotation: (e) => {
         torusTexture.rotation = e.target.value / 10;
-        renderScene();
       },
       text: (e) => {
         torus.material.map.image = generateTexture(e.target.value);
         torus.material.map.needsUpdate = true;
-        renderScene();
       },
       handleSpeed: (e) => {
         textureProps.speed = e.target.value / 1000;
