@@ -1,0 +1,50 @@
+.wrap {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  top: 16px;
+  left: 16px;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 230px;
+  width: 100%;
+}
+
+.menu {
+  display: flex;
+  padding: 24px;
+  background-color: var(--main-clr);
+  color: var(--third-clr);
+  margin-bottom: 8px;
+}
+
+.link {
+  color: var(--third-clr);
+  text-decoration: none;
+  margin-right: 20px;
+  &:hover {
+    color: var(--second-clr);
+  }
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggleControls {
+  cursor: pointer;
+  text-align: left;
+  padding: 16px 24px;
+  color: var(--third-clr);
+  background-color: var(--main-clr);
+}
+
+.inputs {
+  border: var(--main-clr) 2px solid;
+  margin-top: -2px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+}

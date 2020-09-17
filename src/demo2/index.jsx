@@ -1,43 +1,10 @@
 import React from "react";
-import styles from "./demo.module.scss";
+import styles from "./styles.module.scss";
 import * as THREE from "three";
+import { generateTexture } from "./../utils";
 
 import Input from "../components/Input";
-
-const generateTexture = (text) => {
-  const bitmapShift = 80;
-  const copyAmount = 4;
-  const canvasSize = 640;
-  const fontSize = canvasSize / copyAmount;
-
-  const bitmap = document.createElement("canvas");
-  bitmap.width = canvasSize;
-  bitmap.height = canvasSize;
-
-  const g = bitmap.getContext("2d");
-
-  // background
-  g.fillStyle = "#ffa1a1";
-  g.fillRect(0, 0, bitmap.width + 80, bitmap.height);
-
-  // text
-  g.fillStyle = "red";
-  g.font = `Bold ${fontSize}px Arial`;
-  g.fillStyle = "blue";
-  const textWidth = g.measureText(text).width;
-  g.scale(canvasSize / textWidth, 1);
-  const fillAndShiftText = (index) =>
-    g.fillText(text, 0, fontSize * ++index - bitmapShift);
-
-  Array(copyAmount + 1)
-    .fill(0)
-    .forEach((item, i) => {
-      fillAndShiftText(i);
-    });
-
-  // document.body.appendChild(bitmap);
-  return bitmap;
-};
+import Navigation from "../components/Navigation";
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
@@ -205,16 +172,16 @@ const Demo2 = (props) => {
     };
   }, []);
 
-  return (
-    <div className={styles.wrap}>
-      <section className={styles.controls}>
+  const Inputs = () => {
+    return (
+      <>
         <Input
           type="range"
           ref={textureWidthSlider}
           label="Width"
           min="2"
           max="60"
-          val="7"
+          val="6"
         />
         <Input
           type="range"
@@ -249,7 +216,16 @@ const Demo2 = (props) => {
           max="30"
           val="30"
         />
-      </section>
+      </>
+    );
+  };
+
+  return (
+    <div className={styles.wrap}>
+      <Navigation
+        inputs={<Inputs />}
+        colors={{ main: "#010032", second: "#EF92F9", third: "white" }}
+      />
       <canvas ref={mount} id="c" />
     </div>
   );

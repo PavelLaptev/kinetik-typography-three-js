@@ -1,16 +1,45 @@
 import React from "react";
 import styles from "./styles.module.scss";
 import * as THREE from "three";
-import { generateTexture } from "./../utils";
 
 import Input from "../components/Input";
 import Navigation from "../components/Navigation";
 
+export const generateTexture = (
+  text,
+  colors = { main: "#ffa1a1", second: "blue" }
+) => {
+  const copyAmount = 4;
+  const canvasSize = 640;
+  const fontSize = canvasSize / copyAmount;
+  const fontStyle = `Bold ${fontSize}px Arial`;
+
+  const bitmap = document.createElement("canvas");
+  const g = bitmap.getContext("2d");
+  g.font = fontStyle;
+  bitmap.width = g.measureText(text).width;
+  bitmap.height = fontSize;
+
+  const generateTextRow = () => {};
+
+  // background
+  g.fillStyle = colors.main;
+  g.fillRect(0, 0, bitmap.width, bitmap.height);
+
+  // text
+  g.font = `Bold ${fontSize}px Arial`;
+  g.fillStyle = colors.second;
+  g.fillText(text, 0, fontSize - 20);
+
+  document.body.appendChild(bitmap);
+  return bitmap;
+};
+
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-const Demo1 = (props) => {
+const Demo2 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
@@ -32,7 +61,7 @@ const Demo1 = (props) => {
     });
 
     // CAMERA
-    const camera = new THREE.PerspectiveCamera(80, width / height, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(90, width / height, 0.1, 1000);
     camera.position.z = 20;
 
     // TEXTURE
@@ -54,23 +83,42 @@ const Demo1 = (props) => {
     );
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
+    // OBJ ARRAYS
+    let torArray = [];
+    let torusProps = [28, 8.8, 40];
+
     // OBJECTS
-    const torusGeometry = new THREE.TorusKnotBufferGeometry(
-      20,
-      8,
-      poligonsSlider.current.value,
-      24
-    );
-    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-    torus.rotation.x = -50;
-    torus.rotation.z = 100;
-    torus.position.y = 2;
+    Array(5)
+      .fill(0)
+      .forEach((item, i) => {
+        const torusGeometry = new THREE.TorusBufferGeometry(
+          ...torusProps,
+          poligonsSlider.current.value
+        );
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        torArray.push(torus);
+        torus.position.z = -i * i * 12;
+        scene.add(torus);
+      });
 
     // LIGHT
-    const light = new THREE.AmbientLight(0xffffff);
+    const light = new THREE.PointLight("rgb(100%, 80%, 10%)", 1.5, 100);
+    light.position.set(0, 0, -20);
+    scene.add(light);
+
+    const lightTwo = new THREE.PointLight("rgb(0%, 0%, 100%)", 0.5, 100);
+    lightTwo.position.set(0, 0, -180);
+    scene.add(lightTwo);
+
+    const lightThree = new THREE.PointLight("rgb(10%, 0%, 100%)", 1, 100);
+    lightThree.position.set(0, 0, -10);
+    scene.add(lightThree);
+
+    const lightFour = new THREE.AmbientLight("rgb(0%, 0%, 100%)", 1, 100);
+    lightFour.position.set(0, 0, -100);
+    scene.add(lightFour);
 
     // SCENE
-    scene.add(torus, light);
     renderer.setSize(width, height);
 
     const renderScene = () => {
@@ -81,7 +129,10 @@ const Demo1 = (props) => {
     const animate = () => {
       requestAnimationFrame(animate);
       torusTexture.offset.y -= textureProps.speed;
-      torus.rotation.z -= 0.01;
+      // torus.rotation.z -= 0.01;
+      torArray.forEach((item, i) => {
+        item.rotation.z += 0.01 * i + 0.002;
+      });
       renderScene();
     };
 
@@ -110,10 +161,11 @@ const Demo1 = (props) => {
       },
       rotation: (e) => {
         torusTexture.rotation = e.target.value / 10;
+        renderScene();
       },
       text: (e) => {
-        torus.material.map.image = generateTexture(e.target.value);
-        torus.material.map.needsUpdate = true;
+        torusMaterial.map.image = generateTexture(e.target.value);
+        torusMaterial.map.needsUpdate = true;
       },
       handleSpeed: (e) => {
         textureProps.speed = e.target.value / 1000;
@@ -121,12 +173,12 @@ const Demo1 = (props) => {
     };
 
     const handlePoligons = (e) => {
-      torus.geometry = new THREE.TorusKnotBufferGeometry(
-        20,
-        8,
-        e.target.value,
-        24
-      );
+      torArray.forEach((item, i) => {
+        item.geometry = new THREE.TorusBufferGeometry(
+          ...torusProps,
+          e.target.value
+        );
+      });
     };
 
     // WATCHERS
@@ -141,8 +193,8 @@ const Demo1 = (props) => {
       changeTexture.rotation
     );
     textureTextInput.current.addEventListener("change", changeTexture.text);
-    poligonsSlider.current.addEventListener("change", handlePoligons);
     speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
+    poligonsSlider.current.addEventListener("change", handlePoligons);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -156,9 +208,9 @@ const Demo1 = (props) => {
           type="range"
           ref={textureWidthSlider}
           label="Width"
-          min="4"
+          min="2"
           max="60"
-          val="20"
+          val="6"
         />
         <Input
           type="range"
@@ -190,8 +242,8 @@ const Demo1 = (props) => {
           ref={poligonsSlider}
           label="Poligons"
           min="3"
-          max="100"
-          val="80"
+          max="30"
+          val="30"
         />
       </>
     );
@@ -201,11 +253,11 @@ const Demo1 = (props) => {
     <div className={styles.wrap}>
       <Navigation
         inputs={<Inputs />}
-        colors={{ main: "black", second: "#F2A5A3", third: "white" }}
+        colors={{ main: "#010032", second: "#EF92F9", third: "white" }}
       />
       <canvas ref={mount} id="c" />
     </div>
   );
 };
 
-export default Demo1;
+export default Demo2;

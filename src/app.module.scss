@@ -1,5 +1,13 @@
+*,
+:after,
+:before {
+  box-sizing: border-box;
+}
+
 .app {
   text-align: center;
+  font-family: "Roboto Mono", monospace;
+  text-rendering: optimizeLegibility;
 }
 
 .navigation {

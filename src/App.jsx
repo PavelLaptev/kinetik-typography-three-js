@@ -1,25 +1,20 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import styles from "./app.module.scss";
 
 import Demo1 from "./demo1";
 import Demo2 from "./demo2";
+import Demo3 from "./demo3";
 
 function App() {
   return (
     <div className={styles.app}>
       <Router>
-        <div className={styles.navigation}>
-          <Link className={styles.link} to="/TorusKnot">
-            TorusKnot
-          </Link>
-          <Link className={styles.link} to="/demo2">
-            Demo2
-          </Link>
-        </div>
-
         <Switch>
-          <Route path="/demo2">
+          <Route path="/Demo3">
+            <Demo3 />
+          </Route>
+          <Route path="/Donut">
             <Demo2 />
           </Route>
           <Route path={["/TorusKnot", "/"]}>

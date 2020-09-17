@@ -11,38 +11,39 @@ const Input = React.forwardRef((props, ref) => {
   const returnInput = () => {
     if (props.type === "range") {
       return (
-        <input
-          onChange={handleOnChange}
-          className={styles.range}
-          type="range"
-          min={props.min}
-          max={props.max}
-          value={val}
-          ref={ref}
-          step={props.step}
-        />
+        <>
+          <label className={styles.labelRange}>{props.label}</label>
+          <input
+            onChange={handleOnChange}
+            className={styles.range}
+            type="range"
+            min={props.min}
+            max={props.max}
+            value={val}
+            ref={ref}
+            step={props.step}
+          />
+        </>
       );
     }
     if (props.type === "text") {
       return (
-        <input
-          onChange={handleOnChange}
-          className={styles.range}
-          type="text"
-          maxLength="20"
-          value={val}
-          ref={ref}
-        />
+        <>
+          <label className={styles.labelText}>{props.label}</label>
+          <input
+            onChange={handleOnChange}
+            className={styles.text}
+            type="text"
+            maxLength="20"
+            value={val}
+            ref={ref}
+          />
+        </>
       );
     }
   };
 
-  return (
-    <div className={styles.wrap}>
-      <label>{props.label}</label>
-      {returnInput()}
-    </div>
-  );
+  return <div className={styles.wrap}>{returnInput()}</div>;
 });
 
 export default Input;
