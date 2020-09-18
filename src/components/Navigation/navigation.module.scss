@@ -13,16 +13,18 @@
 
 .menu {
   display: flex;
-  padding: 24px;
+  flex-wrap: wrap;
+  padding: 14px;
   background-color: var(--main-clr);
   color: var(--third-clr);
   margin-bottom: 8px;
 }
 
 .link {
+  text-align: left;
   color: var(--third-clr);
   text-decoration: none;
-  margin-right: 20px;
+  padding: 10px;
   &:hover {
     color: var(--second-clr);
   }

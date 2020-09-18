@@ -9,7 +9,7 @@ export const generateTexture = (
   text,
   colors = { main: "#ffa1a1", second: "blue" }
 ) => {
-  const copyAmount = 4;
+  const copyAmount = 2;
   const canvasSize = 640;
   const fontSize = canvasSize / copyAmount;
   const fontStyle = `Bold ${fontSize}px Arial`;
@@ -18,20 +18,29 @@ export const generateTexture = (
   const g = bitmap.getContext("2d");
   g.font = fontStyle;
   bitmap.width = g.measureText(text).width;
-  bitmap.height = fontSize;
+  bitmap.height = fontSize * 2;
 
-  const generateTextRow = () => {};
+  const generateTextRow = (shift, i) => {
+    // background
+    console.log(Object.values(colors)[i]);
+    g.fillStyle = Object.values(colors)[i];
+    g.fillRect(0, shift * i, bitmap.width, bitmap.height);
 
-  // background
-  g.fillStyle = colors.main;
-  g.fillRect(0, 0, bitmap.width, bitmap.height);
+    // text
+    g.font = `Bold ${fontSize}px Arial`;
+    // g.fillStyle = Object.values(colors)[i];
+    g.fillText(text, 0, fontSize * i - 40);
+    g.fillStyle = Object.values(colors)[0];
+  };
+
+  Array(copyAmount + 1)
+    .fill(0)
+    .forEach((item, i) => {
+      generateTextRow(bitmap.height / 2, i);
+    });
 
   // text
-  g.font = `Bold ${fontSize}px Arial`;
-  g.fillStyle = colors.second;
-  g.fillText(text, 0, fontSize - 20);
-
-  document.body.appendChild(bitmap);
+  // document.body.appendChild(bitmap);
   return bitmap;
 };
 

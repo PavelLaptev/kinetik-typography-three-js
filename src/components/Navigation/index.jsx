@@ -28,8 +28,12 @@ const Navigation = React.forwardRef((props, ref) => {
         <NavLink className={styles.link} to="/Donut" activeStyle={isActive}>
           Donut
         </NavLink>
-        <NavLink className={styles.link} to="/Demo3" activeStyle={isActive}>
-          Demo3
+        <NavLink
+          className={styles.link}
+          to="/Donut Stripes"
+          activeStyle={isActive}
+        >
+          Donut Stripes
         </NavLink>
       </div>
       <div className={styles.controls}>
