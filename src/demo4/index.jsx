@@ -11,19 +11,19 @@ import { generateStripeTexture } from "../utils";
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
+const newColors = {
+  main: "#deff00",
+  second: "#FA3749",
+};
+
 const Demo4 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
-  const textureRotationSlider = React.useRef(null);
   const textureTextInput = React.useRef(null);
   const poligonsSlider = React.useRef(null);
   const speedSlider = React.useRef(null);
-
-  const newColors = {
-    main: "#deff00",
-    second: "#FA3749",
-  };
+  const radiusSlider = React.useRef(null);
 
   React.useEffect(() => {
     const canvas = mount.current;
@@ -41,10 +41,11 @@ const Demo4 = (props) => {
     const torusTexture = new THREE.Texture(
       generateStripeTexture(textureTextInput.current.value, newColors)
     );
-    let textureProps = {
+    let meshProps = {
       width: 30,
       height: 1,
       speed: 0.009,
+      poligons: 140,
     };
 
     torusTexture.needsUpdate = true;
@@ -57,18 +58,18 @@ const Demo4 = (props) => {
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
     // OBJECT
-    function helixPoint(a, b, t) {
+    const helixPoint = (a, b, t) => {
       return new THREE.Vector3(-a * Math.cos(t), -b * t, a * Math.sin(t));
-    }
+    };
 
-    function helixPointsArray(a, b) {
+    const helixPointsArray = (a, b) => {
       const curvePoints = [];
 
       for (let t = -20; t < 10; t += 1) {
         curvePoints.push(helixPoint(a, b, t));
       }
       return curvePoints;
-    }
+    };
 
     const spiralSpline = new THREE.CatmullRomCurve3(helixPointsArray(80, 6));
 
@@ -81,9 +82,11 @@ const Demo4 = (props) => {
     );
 
     const mesh = new THREE.Mesh(geometry, torusMaterial);
-    var meshBox = new THREE.Box3().setFromObject(mesh);
-    mesh.position.y = -meshBox.getSize().y / 4;
     scene.add(mesh);
+
+    var meshBox = new THREE.Box3().setFromObject(mesh);
+    const meshBoxCenter = new THREE.Vector3();
+    mesh.position.y = -meshBox.getCenter(meshBoxCenter).y;
 
     // CAMERA
     const camera = new THREE.PerspectiveCamera(400, width / height, 0.1, 1000);
@@ -104,9 +107,9 @@ const Demo4 = (props) => {
     // FUNCTIONS
     const animate = () => {
       requestAnimationFrame(animate);
-      torusTexture.offset.x -= textureProps.speed;
+      torusTexture.offset.x -= meshProps.speed;
       // mesh.rotation.y -= 0.01;
-      // mesh.rotation.x -= 0.01;
+      // mesh.rotation.y -= 0.01;
       renderScene();
     };
 
@@ -126,12 +129,12 @@ const Demo4 = (props) => {
     // TEXTURE CHANGES
     const changeTexture = {
       width: (e) => {
-        textureProps.width = e.target.value;
-        torusTexture.repeat.set(textureProps.width, textureProps.height);
+        meshProps.width = e.target.value;
+        torusTexture.repeat.set(meshProps.width, meshProps.height);
       },
       height: (e) => {
-        textureProps.height = e.target.value;
-        torusTexture.repeat.set(textureProps.width, textureProps.height);
+        meshProps.height = e.target.value;
+        torusTexture.repeat.set(meshProps.width, meshProps.height);
       },
       text: (e) => {
         torusMaterial.map.image = generateStripeTexture(
@@ -141,7 +144,7 @@ const Demo4 = (props) => {
         torusMaterial.map.needsUpdate = true;
       },
       handleSpeed: (e) => {
-        textureProps.speed = e.target.value / 1000;
+        meshProps.speed = e.target.value / 1000;
       },
     };
 
@@ -152,6 +155,18 @@ const Demo4 = (props) => {
       mesh.rotation.z = mouseX / 2000;
       mesh.rotation.x = mouseY / 1000;
       mesh.rotation.y = mouseY / 1000;
+    };
+
+    const handlePoligons = (e) => {
+      meshProps.poligons = e.target.value;
+      mesh.geometry.computeBoundingSphere();
+      mesh.geometry = new THREE.TubeBufferGeometry(
+        spiralSpline,
+        e.target.value,
+        16,
+        2,
+        false
+      );
     };
 
     // WATCHERS
@@ -165,6 +180,7 @@ const Demo4 = (props) => {
     );
     textureTextInput.current.addEventListener("change", changeTexture.text);
     speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
+    poligonsSlider.current.addEventListener("change", handlePoligons);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -203,9 +219,18 @@ const Demo4 = (props) => {
           type="range"
           ref={poligonsSlider}
           label="Poligons"
-          min="3"
-          max="30"
-          val="30"
+          min="8"
+          step="8"
+          max="180"
+          val="140"
+        />
+        <Input
+          type="range"
+          ref={radiusSlider}
+          label="Radius"
+          min="8"
+          max="180"
+          val="140"
         />
       </>
     );
