@@ -1,16 +1,17 @@
 import React from "react";
 import styles from "./styles.module.scss";
 import * as THREE from "three";
-import { generateTexture } from "./../utils";
 
 import Input from "../components/Input";
 import Navigation from "../components/Navigation";
 
+import { generateStripeTexture } from "../utils";
+
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-const Demo2 = (props) => {
+const Demo4 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
@@ -18,6 +19,11 @@ const Demo2 = (props) => {
   const textureTextInput = React.useRef(null);
   const poligonsSlider = React.useRef(null);
   const speedSlider = React.useRef(null);
+
+  const newColors = {
+    main: "#deff00",
+    second: "#FA3749",
+  };
 
   React.useEffect(() => {
     const canvas = mount.current;
@@ -31,17 +37,13 @@ const Demo2 = (props) => {
       alpha: true,
     });
 
-    // CAMERA
-    const camera = new THREE.PerspectiveCamera(90, width / height, 0.1, 1000);
-    camera.position.z = 20;
-
     // TEXTURE
     const torusTexture = new THREE.Texture(
-      generateTexture(textureTextInput.current.value)
+      generateStripeTexture(textureTextInput.current.value, newColors)
     );
     let textureProps = {
-      width: 20,
-      height: 5,
+      width: 30,
+      height: 1,
       speed: 0.009,
     };
 
@@ -54,40 +56,43 @@ const Demo2 = (props) => {
     );
     const torusMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
 
-    // OBJ ARRAYS
-    let torArray = [];
-    let torusProps = [28, 9.8, 40];
+    // OBJECT
+    function helixPoint(a, b, t) {
+      return new THREE.Vector3(-a * Math.cos(t), -b * t, a * Math.sin(t));
+    }
 
-    // OBJECTS
-    Array(5)
-      .fill(0)
-      .forEach((item, i) => {
-        const torusGeometry = new THREE.TorusBufferGeometry(
-          ...torusProps,
-          poligonsSlider.current.value
-        );
-        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-        torArray.push(torus);
-        torus.position.z = -i * i * 12;
-        scene.add(torus);
-      });
+    function helixPointsArray(a, b) {
+      const curvePoints = [];
+
+      for (let t = -20; t < 10; t += 1) {
+        curvePoints.push(helixPoint(a, b, t));
+      }
+      return curvePoints;
+    }
+
+    const spiralSpline = new THREE.CatmullRomCurve3(helixPointsArray(80, 6));
+
+    let geometry = new THREE.TubeBufferGeometry(
+      spiralSpline,
+      140,
+      16,
+      2,
+      false
+    );
+
+    const mesh = new THREE.Mesh(geometry, torusMaterial);
+    var meshBox = new THREE.Box3().setFromObject(mesh);
+    mesh.position.y = -meshBox.getSize().y / 4;
+    scene.add(mesh);
+
+    // CAMERA
+    const camera = new THREE.PerspectiveCamera(400, width / height, 0.1, 1000);
+    camera.position.z = 200;
 
     // LIGHT
-    const light = new THREE.PointLight("rgb(100%, 80%, 10%)", 1.5, 100);
-    light.position.set(0, 0, -20);
-    scene.add(light);
-
-    const lightTwo = new THREE.PointLight("rgb(0%, 0%, 100%)", 0.5, 100);
-    lightTwo.position.set(0, 0, -180);
-    scene.add(lightTwo);
-
-    const lightThree = new THREE.PointLight("rgb(10%, 0%, 100%)", 1, 100);
-    lightThree.position.set(0, 0, -10);
-    scene.add(lightThree);
-
-    const lightFour = new THREE.AmbientLight("rgb(0%, 0%, 100%)", 1, 100);
-    lightFour.position.set(0, 0, -100);
-    scene.add(lightFour);
+    const light2 = new THREE.AmbientLight("rgb(100%, 100%, 100%)", 1.2, 2500);
+    light2.position.set(-200, 30, -30);
+    scene.add(light2);
 
     // SCENE
     renderer.setSize(width, height);
@@ -99,11 +104,9 @@ const Demo2 = (props) => {
     // FUNCTIONS
     const animate = () => {
       requestAnimationFrame(animate);
-      torusTexture.offset.y -= textureProps.speed;
-      // torus.rotation.z -= 0.01;
-      torArray.forEach((item, i) => {
-        item.rotation.z += 0.01 * i + 0.002;
-      });
+      torusTexture.offset.x -= textureProps.speed;
+      // mesh.rotation.y -= 0.01;
+      // mesh.rotation.x -= 0.01;
       renderScene();
     };
 
@@ -130,12 +133,11 @@ const Demo2 = (props) => {
         textureProps.height = e.target.value;
         torusTexture.repeat.set(textureProps.width, textureProps.height);
       },
-      rotation: (e) => {
-        torusTexture.rotation = e.target.value / 10;
-        renderScene();
-      },
       text: (e) => {
-        torusMaterial.map.image = generateTexture(e.target.value);
+        torusMaterial.map.image = generateStripeTexture(
+          e.target.value,
+          newColors
+        );
         torusMaterial.map.needsUpdate = true;
       },
       handleSpeed: (e) => {
@@ -143,26 +145,13 @@ const Demo2 = (props) => {
       },
     };
 
-    const handlePoligons = (e) => {
-      torArray.forEach((item, i) => {
-        item.geometry = new THREE.TorusBufferGeometry(
-          ...torusProps,
-          e.target.value
-        );
-      });
-    };
-
     const handleMouseMove = (e) => {
-      // Update the mouse variable
-      let mouseX = (e.clientX / window.innerWidth) * 4 - 1;
-      let mouseY = -(e.clientY / window.innerHeight) * 4 + 1;
+      let mouseX = e.pageX - window.innerWidth / 2;
+      let mouseY = e.pageY - window.innerHeight / 2;
 
-      light.position.set(mouseX * -6, mouseY * -6, -20);
-
-      torArray.forEach((torus, i) => {
-        torus.position.x = mouseX;
-        torus.position.y = mouseY;
-      });
+      mesh.rotation.z = mouseX / 2000;
+      mesh.rotation.x = mouseY / 1000;
+      mesh.rotation.y = mouseY / 1000;
     };
 
     // WATCHERS
@@ -174,13 +163,8 @@ const Demo2 = (props) => {
       "change",
       changeTexture.height
     );
-    textureRotationSlider.current.addEventListener(
-      "change",
-      changeTexture.rotation
-    );
     textureTextInput.current.addEventListener("change", changeTexture.text);
     speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
-    poligonsSlider.current.addEventListener("change", handlePoligons);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -196,23 +180,15 @@ const Demo2 = (props) => {
           label="Width"
           min="2"
           max="60"
-          val="6"
+          val="16"
         />
         <Input
           type="range"
           ref={textureHeightSlider}
           label="Height"
           min="1"
-          max="60"
-          val="5"
-        />
-        <Input
-          type="range"
-          ref={textureRotationSlider}
-          label="Rotation"
-          min="0"
-          max="60"
-          val="0"
+          max="8"
+          val="1"
         />
         <Input type="text" ref={textureTextInput} label="Text" val="YOUCAN" />
         <Input
@@ -239,11 +215,15 @@ const Demo2 = (props) => {
     <div className={styles.wrap}>
       <Navigation
         inputs={<Inputs />}
-        colors={{ main: "#010032", second: "#EF92F9", third: "white" }}
+        colors={{
+          main: newColors.second,
+          second: newColors.main,
+          third: "white",
+        }}
       />
       <canvas ref={mount} id="c" />
     </div>
   );
 };
 
-export default Demo2;
+export default Demo4;

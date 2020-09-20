@@ -5,12 +5,16 @@ import styles from "./app.module.scss";
 import Demo1 from "./demo1";
 import Demo2 from "./demo2";
 import Demo3 from "./demo3";
+import Demo4 from "./demo4";
 
 function App() {
   return (
     <div className={styles.app}>
       <Router>
         <Switch>
+          <Route path="/Demo4">
+            <Demo4 />
+          </Route>
           <Route path="/Donut Stripes">
             <Demo3 />
           </Route>

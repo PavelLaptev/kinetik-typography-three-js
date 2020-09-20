@@ -5,50 +5,13 @@ import * as THREE from "three";
 import Input from "../components/Input";
 import Navigation from "../components/Navigation";
 
-export const generateTexture = (
-  text,
-  colors = { main: "#ffa1a1", second: "blue" }
-) => {
-  const copyAmount = 2;
-  const canvasSize = 640;
-  const fontSize = canvasSize / copyAmount;
-  const fontStyle = `Bold ${fontSize}px Arial`;
-
-  const bitmap = document.createElement("canvas");
-  const g = bitmap.getContext("2d");
-  g.font = fontStyle;
-  bitmap.width = g.measureText(text).width;
-  bitmap.height = fontSize * 2;
-
-  const generateTextRow = (shift, i) => {
-    // background
-    console.log(Object.values(colors)[i]);
-    g.fillStyle = Object.values(colors)[i];
-    g.fillRect(0, shift * i, bitmap.width, bitmap.height);
-
-    // text
-    g.font = `Bold ${fontSize}px Arial`;
-    // g.fillStyle = Object.values(colors)[i];
-    g.fillText(text, 0, fontSize * i - 40);
-    g.fillStyle = Object.values(colors)[0];
-  };
-
-  Array(copyAmount + 1)
-    .fill(0)
-    .forEach((item, i) => {
-      generateTextRow(bitmap.height / 2, i);
-    });
-
-  // text
-  // document.body.appendChild(bitmap);
-  return bitmap;
-};
+import { generateStripeTexture } from "./../utils";
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-const Demo2 = (props) => {
+const Demo3 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
@@ -75,7 +38,7 @@ const Demo2 = (props) => {
 
     // TEXTURE
     const torusTexture = new THREE.Texture(
-      generateTexture(textureTextInput.current.value)
+      generateStripeTexture(textureTextInput.current.value)
     );
     let textureProps = {
       width: 20,
@@ -94,7 +57,7 @@ const Demo2 = (props) => {
 
     // OBJ ARRAYS
     let torArray = [];
-    let torusProps = [28, 8.8, 40];
+    let torusProps = [28, 9.8, 40];
 
     // OBJECTS
     Array(5)
@@ -173,7 +136,7 @@ const Demo2 = (props) => {
         renderScene();
       },
       text: (e) => {
-        torusMaterial.map.image = generateTexture(e.target.value);
+        torusMaterial.map.image = generateStripeTexture(e.target.value);
         torusMaterial.map.needsUpdate = true;
       },
       handleSpeed: (e) => {
@@ -190,8 +153,23 @@ const Demo2 = (props) => {
       });
     };
 
+    const handleMouseMove = (e) => {
+      // Update the mouse variable
+      let mouseX = (e.clientX / window.innerWidth) * 4 - 1;
+      let mouseY = -(e.clientY / window.innerHeight) * 4 + 1;
+
+      light.position.set(mouseX * -6, mouseY * -6, -20 + mouseY * 6);
+
+      torArray.forEach((torus, i) => {
+        torus.position.x = mouseX;
+        torus.position.y = mouseY;
+      });
+    };
+
     // WATCHERS
     window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+
     textureWidthSlider.current.addEventListener("change", changeTexture.width);
     textureHeightSlider.current.addEventListener(
       "change",
@@ -269,4 +247,4 @@ const Demo2 = (props) => {
   );
 };
 
-export default Demo2;
+export default Demo3;
