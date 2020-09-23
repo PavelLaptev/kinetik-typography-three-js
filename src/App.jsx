@@ -12,7 +12,7 @@ function App() {
     <div className={styles.app}>
       <Router>
         <Switch>
-          <Route path="/Demo4">
+          <Route path="/Spiral">
             <Demo4 />
           </Route>
           <Route path="/Donut Stripes">

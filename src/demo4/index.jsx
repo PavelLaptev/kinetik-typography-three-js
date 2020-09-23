@@ -23,7 +23,7 @@ const Demo4 = (props) => {
   const textureTextInput = React.useRef(null);
   const poligonsSlider = React.useRef(null);
   const speedSlider = React.useRef(null);
-  const radiusSlider = React.useRef(null);
+  const tensionSlider = React.useRef(null);
 
   React.useEffect(() => {
     const canvas = mount.current;
@@ -45,7 +45,7 @@ const Demo4 = (props) => {
       width: 30,
       height: 1,
       speed: 0.009,
-      poligons: 140,
+      poligons: 160,
     };
 
     torusTexture.needsUpdate = true;
@@ -65,13 +65,13 @@ const Demo4 = (props) => {
     const helixPointsArray = (a, b) => {
       const curvePoints = [];
 
-      for (let t = -20; t < 10; t += 1) {
+      for (let t = -20; t < 20; t += 1) {
         curvePoints.push(helixPoint(a, b, t));
       }
       return curvePoints;
     };
 
-    const spiralSpline = new THREE.CatmullRomCurve3(helixPointsArray(80, 6));
+    let spiralSpline = new THREE.CatmullRomCurve3(helixPointsArray(80, 6));
 
     let geometry = new THREE.TubeBufferGeometry(
       spiralSpline,
@@ -84,6 +84,7 @@ const Demo4 = (props) => {
     const mesh = new THREE.Mesh(geometry, torusMaterial);
     scene.add(mesh);
 
+    // Correct Y position
     var meshBox = new THREE.Box3().setFromObject(mesh);
     const meshBoxCenter = new THREE.Vector3();
     mesh.position.y = -meshBox.getCenter(meshBoxCenter).y;
@@ -93,9 +94,9 @@ const Demo4 = (props) => {
     camera.position.z = 200;
 
     // LIGHT
-    const light2 = new THREE.AmbientLight("rgb(100%, 100%, 100%)", 1.2, 2500);
-    light2.position.set(-200, 30, -30);
-    scene.add(light2);
+    const light = new THREE.AmbientLight("rgb(100%, 100%, 100%)", 1.2, 2500);
+    light.position.set(-200, 30, -30);
+    scene.add(light);
 
     // SCENE
     renderer.setSize(width, height);
@@ -108,8 +109,7 @@ const Demo4 = (props) => {
     const animate = () => {
       requestAnimationFrame(animate);
       torusTexture.offset.x -= meshProps.speed;
-      // mesh.rotation.y -= 0.01;
-      // mesh.rotation.y -= 0.01;
+      camera.rotation.z += 0.001;
       renderScene();
     };
 
@@ -154,7 +154,27 @@ const Demo4 = (props) => {
 
       mesh.rotation.z = mouseX / 2000;
       mesh.rotation.x = mouseY / 1000;
-      mesh.rotation.y = mouseY / 1000;
+      mesh.rotation.y = -mouseY / 100;
+
+      const scaleVal = () => {
+        let val = (1 + mouseY / 1000).toFixed(2);
+        let min = 1;
+        let max = 1.7;
+
+        if (val >= min && val <= max) {
+          return val;
+        }
+
+        if (val < min) {
+          return min;
+        }
+
+        if (val > max) {
+          return max;
+        }
+      };
+
+      mesh.scale.set(scaleVal(), 1, scaleVal());
     };
 
     const handlePoligons = (e) => {
@@ -163,6 +183,20 @@ const Demo4 = (props) => {
       mesh.geometry = new THREE.TubeBufferGeometry(
         spiralSpline,
         e.target.value,
+        16,
+        2,
+        false
+      );
+    };
+
+    const handleTension = (e) => {
+      spiralSpline = new THREE.CatmullRomCurve3(
+        helixPointsArray(80, e.target.value)
+      );
+
+      mesh.geometry = new THREE.TubeBufferGeometry(
+        spiralSpline,
+        meshProps.poligons,
         16,
         2,
         false
@@ -181,6 +215,7 @@ const Demo4 = (props) => {
     textureTextInput.current.addEventListener("change", changeTexture.text);
     speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
     poligonsSlider.current.addEventListener("change", handlePoligons);
+    tensionSlider.current.addEventListener("change", handleTension);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -221,16 +256,16 @@ const Demo4 = (props) => {
           label="Poligons"
           min="8"
           step="8"
-          max="180"
-          val="140"
+          max="240"
+          val="160"
         />
         <Input
           type="range"
-          ref={radiusSlider}
-          label="Radius"
-          min="8"
-          max="180"
-          val="140"
+          ref={tensionSlider}
+          label="Tension"
+          min="2"
+          max="18"
+          val="6"
         />
       </>
     );
