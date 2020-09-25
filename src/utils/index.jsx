@@ -71,6 +71,6 @@ export const generateStripeTexture = (
     });
 
   // text
-  document.body.appendChild(bitmap);
+  // document.body.appendChild(bitmap);
   return bitmap;
 };

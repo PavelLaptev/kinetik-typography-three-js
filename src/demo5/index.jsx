@@ -13,8 +13,8 @@ import { generateStripeTexture } from "../utils";
 ////////////////////////////////////////////////////////////////
 
 const newColors = {
-  main: "red",
-  second: "green",
+  main: "#343434",
+  second: "#C4C4C4",
 };
 
 const Demo5 = (props) => {
@@ -46,14 +46,15 @@ const Demo5 = (props) => {
     });
 
     // TEXTURE
-    const torusTexture = new THREE.Texture(
+    const texture = new THREE.Texture(
       generateStripeTexture(textureTextInput.current.value, newColors)
     );
-    torusTexture.needsUpdate = true;
-    torusTexture.wrapS = torusTexture.wrapT = THREE.RepeatWrapping;
-    torusTexture.repeat.set(meshProps.width, meshProps.height);
-    torusTexture.needsUpdate = true;
-    const meshMaterial = new THREE.MeshPhongMaterial({ map: torusTexture });
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(meshProps.width, meshProps.height);
+    texture.needsUpdate = true;
+    const meshMaterial = new THREE.MeshPhongMaterial({ map: texture });
+
+    // let uvGenerator = new THREE.UVsUtils.CylinderUVGenerator();
 
     // CURVE
     let closedSpline = new THREE.CatmullRomCurve3([
@@ -62,6 +63,12 @@ const Demo5 = (props) => {
       new THREE.Vector3(-60, 120, 60),
       new THREE.Vector3(60, 20, -60),
       new THREE.Vector3(60, -100, -60),
+
+      new THREE.Vector3(-130, -30, 90),
+      new THREE.Vector3(-100, 20, 40),
+      new THREE.Vector3(-100, 120, 60),
+      new THREE.Vector3(60, 20, -60),
+      new THREE.Vector3(60, -130, -60),
     ]);
 
     closedSpline.curveType = "catmullrom";
@@ -71,6 +78,8 @@ const Demo5 = (props) => {
       steps: 70,
       bevelEnabled: false,
       extrudePath: closedSpline,
+      extrudeMaterial: 0,
+      material: 1,
     };
 
     let pts = [];
@@ -101,7 +110,7 @@ const Demo5 = (props) => {
     light.position.set(-200, 30, -30);
     scene.add(light);
 
-    const light2 = new THREE.PointLight("rgb(100%, 0%, 100%)", 1.2, 2500);
+    const light2 = new THREE.PointLight("rgb(100%, 100%, 100%)", 1.2, 2500);
     light2.position.set(100, -10, 100);
     scene.add(light2);
 
@@ -120,7 +129,7 @@ const Demo5 = (props) => {
     // ANIMATE
     const animate = () => {
       requestAnimationFrame(animate);
-      torusTexture.offset.x -= meshProps.speed;
+      texture.offset.x -= meshProps.speed;
       // camera.rotation.z += 0.001;
       controls.update();
       renderScene();
@@ -143,11 +152,11 @@ const Demo5 = (props) => {
     const changeTexture = {
       width: (e) => {
         meshProps.width = e.target.value / 500;
-        torusTexture.repeat.set(meshProps.width, meshProps.height);
+        texture.repeat.set(meshProps.width, meshProps.height);
       },
       height: (e) => {
         meshProps.height = e.target.value / 500;
-        torusTexture.repeat.set(meshProps.width, meshProps.height);
+        texture.repeat.set(meshProps.width, meshProps.height);
       },
       text: (e) => {
         meshMaterial.map.image = generateStripeTexture(
