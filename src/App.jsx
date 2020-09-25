@@ -6,16 +6,12 @@ import Demo1 from "./demo1";
 import Demo2 from "./demo2";
 import Demo3 from "./demo3";
 import Demo4 from "./demo4";
-import Demo5 from "./demo5";
 
 function App() {
   return (
     <div className={styles.app}>
       <Router>
         <Switch>
-          <Route path="/Demo5">
-            <Demo5 />
-          </Route>
           <Route path="/Spiral">
             <Demo4 />
           </Route>

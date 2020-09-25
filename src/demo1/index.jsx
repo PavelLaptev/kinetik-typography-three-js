@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./styles.module.scss";
 import * as THREE from "three";
-import { generateTexture } from "./../utils";
+import { generateStripeTexture } from "./../utils";
 
 import Input from "../components/Input";
 import Navigation from "../components/Navigation";
@@ -37,11 +37,11 @@ const Demo1 = (props) => {
 
     // TEXTURE
     const torusTexture = new THREE.Texture(
-      generateTexture(textureTextInput.current.value)
+      generateStripeTexture(textureTextInput.current.value)
     );
     let textureProps = {
       width: 20,
-      height: 5,
+      height: 6,
       speed: 0.009,
     };
 
@@ -112,7 +112,7 @@ const Demo1 = (props) => {
         torusTexture.rotation = e.target.value / 10;
       },
       text: (e) => {
-        torus.material.map.image = generateTexture(e.target.value);
+        torus.material.map.image = generateStripeTexture(e.target.value);
         torus.material.map.needsUpdate = true;
       },
       handleSpeed: (e) => {
@@ -166,7 +166,7 @@ const Demo1 = (props) => {
           label="Height"
           min="1"
           max="60"
-          val="5"
+          val="6"
         />
         <Input
           type="range"
