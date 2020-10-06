@@ -38,6 +38,9 @@ const Navigation = React.forwardRef((props, ref) => {
         <NavLink className={styles.link} to="/Spiral" activeStyle={isActive}>
           Spiral
         </NavLink>
+        <NavLink className={styles.link} to="/demo5" activeStyle={isActive}>
+          Demo5
+        </NavLink>
       </div>
       <div className={styles.controls}>
         <div
