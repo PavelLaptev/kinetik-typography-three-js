@@ -43,7 +43,7 @@ const Demo7 = () => {
     };
 
     let textureProps = {
-      speed: 0.001,
+      speed: 0.005,
       height: 4,
       width: 3,
     };
@@ -125,26 +125,28 @@ const Demo7 = () => {
     };
 
     // TEXTURE CHANGES
-    // const changeTexture = {
-    //   width: (e) => {
-    //     textureProps.width = e.target.value;
-    //     planeTexture.repeat.set(textureProps.width, textureProps.height);
-    //   },
-    //   height: (e) => {
-    //     textureProps.height = e.target.value;
-    //     planeTexture.repeat.set(textureProps.width, textureProps.height);
-    //   },
-    //   text: (e) => {
-    //     planeMaterial.map.image = generateStripeTexture(
-    //       e.target.value,
-    //       newColors
-    //     );
-    //     planeMaterial.map.needsUpdate = true;
-    //   },
-    //   handleSpeed: (e) => {
-    //     textureProps.speed = e.target.value / 1000;
-    //   },
-    // };
+    const changeTexture = {
+      width: (e) => {
+        textureProps.width = e.target.value;
+        planeTexture.repeat.set(textureProps.width, textureProps.height);
+      },
+      height: (e) => {
+        textureProps.height = e.target.value;
+        planeTexture.repeat.set(textureProps.width, textureProps.height);
+      },
+      text: (e) => {
+        planeMaterial.map.image = generateTexture(
+          e.target.value,
+          newColors.main,
+          newColors.second,
+          1000
+        );
+        planeMaterial.map.needsUpdate = true;
+      },
+      handleSpeed: (e) => {
+        textureProps.speed = e.target.value / 1500;
+      },
+    };
 
     const handleMouseMove = (e) => {
       let mouseX = e.pageX - window.innerWidth / 2;
@@ -159,13 +161,13 @@ const Demo7 = () => {
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
 
-    // textureWidthSlider.current.addEventListener("change", changeTexture.width);
-    // textureHeightSlider.current.addEventListener(
-    //   "change",
-    //   changeTexture.height
-    // );
-    // textureTextInput.current.addEventListener("change", changeTexture.text);
-    // speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
+    textureWidthSlider.current.addEventListener("change", changeTexture.width);
+    textureHeightSlider.current.addEventListener(
+      "change",
+      changeTexture.height
+    );
+    textureTextInput.current.addEventListener("change", changeTexture.text);
+    speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
 
     return () => {
       console.log("**CURSOR UNMOUNTED**");
@@ -181,7 +183,7 @@ const Demo7 = () => {
           label="Width"
           min="1"
           max="20"
-          val="2"
+          val="3"
         />
         <Input
           type="range"
@@ -189,7 +191,7 @@ const Demo7 = () => {
           label="Height"
           min="1"
           max="20"
-          val="3"
+          val="4"
         />
         <Input type="text" ref={textureTextInput} label="Text" val="YOUCAN" />
         <Input
@@ -209,7 +211,7 @@ const Demo7 = () => {
       <Navigation
         inputs={<Inputs />}
         colors={{
-          main: "#1f2923",
+          main: "#1d211f",
           second: newColors.second,
           third: "white",
         }}

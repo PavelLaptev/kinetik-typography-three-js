@@ -22,29 +22,29 @@ const Navigation = React.forwardRef((props, ref) => {
   return (
     <section className={styles.wrap} style={CSSVars}>
       <div className={styles.menu}>
-        <NavLink className={styles.link} to="/TorusKnot" activeStyle={isActive}>
+        <NavLink className={styles.link} to="/torusknot" activeStyle={isActive}>
           TorusKnot
         </NavLink>
-        <NavLink className={styles.link} to="/Donut" activeStyle={isActive}>
+        <NavLink className={styles.link} to="/donut" activeStyle={isActive}>
           Donut
         </NavLink>
         <NavLink
           className={styles.link}
-          to="/Donut Stripes"
+          to="/donutstripes"
           activeStyle={isActive}
         >
           Donut Stripes
         </NavLink>
-        <NavLink className={styles.link} to="/Spiral" activeStyle={isActive}>
+        <NavLink className={styles.link} to="/spiral" activeStyle={isActive}>
           Spiral
         </NavLink>
-        <NavLink className={styles.link} to="/Sphere" activeStyle={isActive}>
+        <NavLink className={styles.link} to="/sphere" activeStyle={isActive}>
           Sphere
         </NavLink>
-        <NavLink className={styles.link} to="/Cube" activeStyle={isActive}>
+        <NavLink className={styles.link} to="/cube" activeStyle={isActive}>
           Cube
         </NavLink>
-        <NavLink className={styles.link} to="/Waterfall" activeStyle={isActive}>
+        <NavLink className={styles.link} to="/waterfall" activeStyle={isActive}>
           Waterfall
         </NavLink>
       </div>

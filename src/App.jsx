@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import styles from "./app.module.scss";
 
 import Demo1 from "./demo1";
@@ -15,25 +15,25 @@ function App() {
     <div className={styles.app}>
       <Router>
         <Switch>
-          <Route path="/Waterfall">
+          <Route path="/waterfall">
             <Demo7 />
           </Route>
-          <Route path="/Cube">
+          <Route path="/cube">
             <Demo6 />
           </Route>
-          <Route path="/Sphere">
+          <Route path="/sphere">
             <Demo5 />
           </Route>
-          <Route path="/Spiral">
+          <Route path="/spiral">
             <Demo4 />
           </Route>
-          <Route path="/Donut Stripes">
+          <Route path="/donutstripes">
             <Demo3 />
           </Route>
-          <Route path="/Donut">
+          <Route path="/donut">
             <Demo2 />
           </Route>
-          <Route path={["/TorusKnot", "/"]}>
+          <Route path={["/torusknot", "/"]}>
             <Demo1 />
           </Route>
         </Switch>
