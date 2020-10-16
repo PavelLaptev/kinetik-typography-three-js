@@ -38,8 +38,14 @@ const Navigation = React.forwardRef((props, ref) => {
         <NavLink className={styles.link} to="/Spiral" activeStyle={isActive}>
           Spiral
         </NavLink>
-        <NavLink className={styles.link} to="/demo5" activeStyle={isActive}>
-          Demo5
+        <NavLink className={styles.link} to="/Sphere" activeStyle={isActive}>
+          Sphere
+        </NavLink>
+        <NavLink className={styles.link} to="/Cube" activeStyle={isActive}>
+          Cube
+        </NavLink>
+        <NavLink className={styles.link} to="/Waterfall" activeStyle={isActive}>
+          Waterfall
         </NavLink>
       </div>
       <div className={styles.controls}>
@@ -64,6 +70,19 @@ const Navigation = React.forwardRef((props, ref) => {
         >
           {props.inputs}
         </div>
+      </div>
+      <div className={styles.linksBlock}>
+        <a
+          className={styles.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/PavelLaptev/kinetik-typography-three-js"
+        >
+          Github
+        </a>
+        <a className={styles.link} href="##">
+          Article
+        </a>
       </div>
     </section>
   );

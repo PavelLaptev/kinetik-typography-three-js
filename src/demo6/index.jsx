@@ -12,17 +12,16 @@ import { generateStripeTexture } from "../utils";
 ////////////////////////////////////////////////////////////////
 
 const newColors = {
-  main: "#3A3A3A",
-  second: "#DEDEDE",
-  third: "#3A3A3A",
+  main: "#8e00ff",
+  second: "#b3ff42",
+  third: "#8e00ff",
 };
 
-const Demo5 = (props) => {
+const Demo6 = (props) => {
   const mount = React.useRef(null);
   const textureWidthSlider = React.useRef(null);
   const textureHeightSlider = React.useRef(null);
   const textureTextInput = React.useRef(null);
-  const poligonsSlider = React.useRef(null);
   const speedSlider = React.useRef(null);
 
   React.useEffect(() => {
@@ -37,48 +36,55 @@ const Demo5 = (props) => {
       alpha: true,
     });
 
+    // PROPS
+    let boxProps = {
+      scale: 12,
+      poligons: 1,
+    };
+
+    let textureProps = {
+      speed: 0.009,
+      height: 2,
+      width: 3,
+    };
+
     // TEXTURE
-    const ballTexture = new THREE.Texture(
+    const boxTexture = new THREE.Texture(
       generateStripeTexture(textureTextInput.current.value, newColors)
     );
 
-    ballTexture.needsUpdate = true;
-    ballTexture.wrapS = THREE.RepeatWrapping;
-    ballTexture.wrapT = THREE.RepeatWrapping;
-    ballTexture.repeat.set(
-      textureWidthSlider.current.value,
-      textureHeightSlider.current.value
-    );
-    const ballMaterial = new THREE.MeshPhongMaterial({ map: ballTexture });
+    boxTexture.needsUpdate = true;
+    boxTexture.wrapS = THREE.RepeatWrapping;
+    boxTexture.wrapT = THREE.RepeatWrapping;
+    boxTexture.repeat.set(-textureProps.height, textureProps.width);
+    const boxMaterial = new THREE.MeshPhongMaterial({
+      map: boxTexture,
+      side: THREE.BackSide,
+    });
 
     // OBJECT
-    let meshProps = {
-      height: 4,
-      width: 4,
-      scale: 30,
-      speed: 0.009,
-      poligons: 32,
-    };
-
-    const geometry = new THREE.SphereGeometry(
-      meshProps.scale,
-      meshProps.poligons,
-      meshProps.poligons
+    const geometry = new THREE.BoxGeometry(
+      boxProps.scale,
+      boxProps.scale,
+      boxProps.scale,
+      boxProps.poligons,
+      boxProps.poligons,
+      boxProps.poligons
     );
 
-    const mesh = new THREE.Mesh(geometry, ballMaterial);
-    mesh.rotation.z = 45;
-    mesh.rotation.x = 550;
-    mesh.rotation.y = -206;
-    scene.add(mesh);
+    const cube = new THREE.Mesh(geometry, boxMaterial);
+    cube.rotateX(0.5);
+    cube.rotateY(-0.7);
+
+    scene.add(cube);
 
     // CAMERA
-    const camera = new THREE.PerspectiveCamera(400, width / height, 0.1, 1000);
-    camera.position.z = 80;
+    const camera = new THREE.PerspectiveCamera(110, width / height, 1, 1100);
+    camera.position.z = 2;
 
     // LIGHT
-    const light = new THREE.AmbientLight("rgb(100%, 100%, 100%)", 1, 2500);
-    light.position.set(-200, 30, -30);
+    const light = new THREE.PointLight("rgb(100%, 100%, 100%)", 1, 1500);
+    light.position.set(0, 0, 0);
     scene.add(light);
 
     // SCENE
@@ -91,7 +97,10 @@ const Demo5 = (props) => {
     // FUNCTIONS
     const animate = () => {
       requestAnimationFrame(animate);
-      ballTexture.offset.y -= meshProps.speed;
+      boxTexture.offset.x -= textureProps.speed;
+      boxTexture.offset.z -= textureProps.speed;
+      boxTexture.offset.y -= textureProps.speed;
+      boxTexture.rotation -= textureProps.speed / 2;
       camera.rotation.z += 0.001;
       renderScene();
     };
@@ -112,22 +121,22 @@ const Demo5 = (props) => {
     // TEXTURE CHANGES
     const changeTexture = {
       width: (e) => {
-        meshProps.width = e.target.value;
-        ballTexture.repeat.set(meshProps.width, meshProps.height);
+        textureProps.width = e.target.value;
+        boxTexture.repeat.set(textureProps.width, textureProps.height);
       },
       height: (e) => {
-        meshProps.height = e.target.value;
-        ballTexture.repeat.set(meshProps.width, meshProps.height);
+        textureProps.height = e.target.value;
+        boxTexture.repeat.set(textureProps.width, textureProps.height);
       },
       text: (e) => {
-        ballMaterial.map.image = generateStripeTexture(
+        boxMaterial.map.image = generateStripeTexture(
           e.target.value,
           newColors
         );
-        ballMaterial.map.needsUpdate = true;
+        boxMaterial.map.needsUpdate = true;
       },
       handleSpeed: (e) => {
-        meshProps.speed = e.target.value / 1000;
+        textureProps.speed = e.target.value / 1000;
       },
     };
 
@@ -135,34 +144,13 @@ const Demo5 = (props) => {
       let mouseX = e.pageX - window.innerWidth / 2;
       let mouseY = e.pageY - window.innerHeight / 2;
 
-      mesh.rotation.x = mouseY / 200;
-      mesh.rotation.y = mouseX / 200;
-
-      let cameraZoom = 70 + -mouseX * 0.1;
-
-      if (cameraZoom < 60) {
-        camera.position.z = 60;
-      } else if (cameraZoom > 100) {
-        camera.position.z = 100;
-      } else {
-        camera.position.z = cameraZoom;
-      }
-    };
-
-    const handlePoligons = (e) => {
-      meshProps.poligons = e.target.value;
-      mesh.geometry = new THREE.SphereGeometry(
-        meshProps.scale,
-        meshProps.poligons,
-        meshProps.poligons
-      );
+      cube.rotation.x = mouseY / 200;
+      cube.rotation.y = mouseX / 200;
     };
 
     // WATCHERS
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
-
-    poligonsSlider.current.addEventListener("change", handlePoligons);
 
     textureWidthSlider.current.addEventListener("change", changeTexture.width);
     textureHeightSlider.current.addEventListener(
@@ -184,9 +172,9 @@ const Demo5 = (props) => {
           type="range"
           ref={textureWidthSlider}
           label="Width"
-          min="2"
-          max="40"
-          val="4"
+          min="1"
+          max="20"
+          val="2"
         />
         <Input
           type="range"
@@ -194,7 +182,7 @@ const Demo5 = (props) => {
           label="Height"
           min="1"
           max="20"
-          val="4"
+          val="3"
         />
         <Input type="text" ref={textureTextInput} label="Text" val="YOUCAN" />
         <Input
@@ -205,15 +193,6 @@ const Demo5 = (props) => {
           max="100"
           val="10"
         />
-        <Input
-          type="range"
-          ref={poligonsSlider}
-          label="Poligons"
-          min="2"
-          step="1"
-          max="64"
-          val="32"
-        />
       </>
     );
   };
@@ -223,8 +202,8 @@ const Demo5 = (props) => {
       <Navigation
         inputs={<Inputs />}
         colors={{
-          main: "#232323",
-          second: "#949494",
+          main: "#8e00ff",
+          second: "#b3ff42",
           third: "white",
         }}
       />
@@ -233,4 +212,4 @@ const Demo5 = (props) => {
   );
 };
 
-export default Demo5;
+export default Demo6;

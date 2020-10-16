@@ -7,13 +7,21 @@ import Demo2 from "./demo2";
 import Demo3 from "./demo3";
 import Demo4 from "./demo4";
 import Demo5 from "./demo5";
+import Demo6 from "./demo6";
+import Demo7 from "./demo7";
 
 function App() {
   return (
     <div className={styles.app}>
       <Router>
         <Switch>
-          <Route path="/demo5">
+          <Route path="/Waterfall">
+            <Demo7 />
+          </Route>
+          <Route path="/Cube">
+            <Demo6 />
+          </Route>
+          <Route path="/Sphere">
             <Demo5 />
           </Route>
           <Route path="/Spiral">

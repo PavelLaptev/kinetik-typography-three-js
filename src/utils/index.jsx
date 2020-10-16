@@ -1,11 +1,12 @@
 export const generateTexture = (
   text,
   background = "#ffa1a1",
-  textcolor = "blue"
+  textcolor = "blue",
+  size = 640
 ) => {
   const bitmapShift = 80;
   const copyAmount = 4;
-  const canvasSize = 640;
+  const canvasSize = size;
   const fontSize = canvasSize / copyAmount;
 
   const bitmap = document.createElement("canvas");

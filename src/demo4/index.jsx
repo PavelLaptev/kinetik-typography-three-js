@@ -177,6 +177,17 @@ const Demo4 = (props) => {
       mesh.scale.set(scaleVal(), 1, scaleVal());
     };
 
+    const handlePoligons = (e) => {
+      meshProps.poligons = e.target.value;
+      mesh.geometry = new THREE.TubeBufferGeometry(
+        spiralSpline,
+        meshProps.poligons,
+        16,
+        2,
+        false
+      );
+    };
+
     const handleTension = (e) => {
       spiralSpline = new THREE.CatmullRomCurve3(
         helixPointsArray(80, e.target.value)
@@ -202,6 +213,7 @@ const Demo4 = (props) => {
     );
     textureTextInput.current.addEventListener("change", changeTexture.text);
     speedSlider.current.addEventListener("change", changeTexture.handleSpeed);
+    poligonsSlider.current.addEventListener("change", handlePoligons);
     tensionSlider.current.addEventListener("change", handleTension);
 
     return () => {

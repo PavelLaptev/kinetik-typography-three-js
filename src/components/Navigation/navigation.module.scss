@@ -33,6 +33,7 @@
 .controls {
   display: flex;
   flex-direction: column;
+  margin-bottom: 8px;
 }
 
 .toggleControls {
@@ -49,4 +50,11 @@
   padding: 16px 24px;
   display: flex;
   flex-direction: column;
+}
+
+.linksBlock {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px;
+  background-color: var(--main-clr);
 }

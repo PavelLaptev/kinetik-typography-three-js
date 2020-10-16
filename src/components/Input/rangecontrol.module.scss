@@ -28,7 +28,9 @@
   }
 }
 
-.labelRange {
+.labelRange,
+.labelText {
+  color: var(--main-clr);
   margin-bottom: 4px;
 }
 
@@ -37,8 +39,4 @@
   padding: 12px 12px;
   border: var(--main-clr) 2px solid;
   font-family: "Roboto Mono", monospace;
-}
-
-.labelText {
-  margin-bottom: 4px;
 }
