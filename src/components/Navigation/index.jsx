@@ -80,7 +80,12 @@ const Navigation = React.forwardRef((props, ref) => {
         >
           Github
         </a>
-        <a className={styles.link} href="##">
+        <a
+          className={styles.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://medium.com/@PavelLaptev/kinetictypography-with-threejs-2bed948720a2"
+        >
           Article
         </a>
       </div>
