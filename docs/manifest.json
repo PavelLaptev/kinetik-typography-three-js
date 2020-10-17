@@ -1,9 +1,9 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Kinetic typography with ThreeJS",
+  "name": "Kinetic typography with ThreeJS",
   "icons": [
     {
-      "src": "favico.png",
+      "src": "favico-32.png",
       "sizes": "96x96 64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
